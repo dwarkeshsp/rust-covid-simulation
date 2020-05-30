@@ -4,6 +4,7 @@ use ggez::graphics;
 use ggez::nalgebra as na;
 use ggez::{Context, GameResult};
 use rand::Rng;
+use std::f32;
 
 #[derive(PartialEq)]
 enum Status {
@@ -12,8 +13,8 @@ enum Status {
 }
 
 pub struct Person {
-    pos_x: f32,
-    pos_y: f32,
+    x: f32,
+    y: f32,
     dx: f32,
     dy: f32,
     status: Status,
@@ -22,20 +23,37 @@ pub struct Person {
 pub fn create_people(amount: i32, width: f32, heigth: f32) -> Vec<Person> {
     let mut rng = rand::thread_rng();
 
-    let new_person = |_| {
-        let mut person = Person {
-            pos_x: width / 2.0,
-            pos_y: heigth / 2.0,
-            dx: 0.0,
-            dy: 0.0,
-            status: Status::Healthy,
-        };
-        person
+    let mut start_pos = |pos: f32| pos / 2.0 + 100.0 * rng.gen::<f32>();
+
+    let new_person = |_| Person {
+        x: start_pos(width),
+        y: start_pos(heigth),
+        dx: 0.0,
+        dy: 0.0,
+        status: Status::Healthy,
     };
+
     (0..amount).map(new_person).collect()
 }
 
-pub fn update_person(person: &mut Person) {}
+pub fn update_person(person: &mut Person, width: f32, heigth: f32) {
+    let mut rng = rand::thread_rng();
+
+    let mut new_d = |old_d: f32, pos: f32, center: f32| {
+        let gravity = (center - pos).powi(2) / 10000.0;
+        let mut result = if pos > center {
+            old_d - gravity
+        } else {
+            old_d + gravity
+        };
+        result += rng.gen::<f32>() - 0.5;
+        result
+    };
+    person.dx = new_d(person.dx, person.x, width / 2.0);
+    person.dy = new_d(person.dy, person.y, heigth / 2.0);
+    person.x += person.dx;
+    person.y += person.dy;
+}
 
 pub fn draw_person(ctx: &mut Context, person: &Person) -> GameResult {
     let color = if Status::Sick == person.status {
@@ -47,52 +65,10 @@ pub fn draw_person(ctx: &mut Context, person: &Person) -> GameResult {
         ctx,
         graphics::DrawMode::fill(),
         na::Point2::new(0.0, 0.0),
-        20.0,
+        5.0,
         2.0,
         color,
     )?;
-    graphics::draw(ctx, &circle, (na::Point2::new(person.pos_x, person.pos_y),))?;
+    graphics::draw(ctx, &circle, (na::Point2::new(person.x, person.y),))?;
     Ok(())
 }
-/*
-
-impl Person {
-    pub fn new(status: Status) -> GameResult<Person> {
-        let s = Person {
-            pos_x: 0.0,
-            pos_y: 0.0,
-            status: Status::Sick,
-        };
-        Ok(s)
-    }
-}
-impl event::EventHandler for Person {
-    fn update(&mut self, _ctx: &mut Context) -> GameResult {
-        self.pos_x = self.pos_x % 800.0 + 1.0;
-        self.pos_y = self.pos_y % 800.0 + 1.0;
-        Ok(())
-    }
-
-    fn draw(&mut self, ctx: &mut Context) -> GameResult {
-        graphics::clear(ctx, [0.1, 0.2, 0.3, 1.0].into());
-
-        let color = if Status::Sick == self.status {
-            graphics::BLACK
-        } else {
-            graphics::WHITE
-        };
-        let circle = graphics::Mesh::new_circle(
-            ctx,
-            graphics::DrawMode::fill(),
-            na::Point2::new(0.0, 0.0),
-            20.0,
-            2.0,
-            color,
-        )?;
-        graphics::draw(ctx, &circle, (na::Point2::new(self.pos_x, self.pos_y),))?;
-
-        graphics::present(ctx)?;
-        Ok(())
-    }
-}
-*/

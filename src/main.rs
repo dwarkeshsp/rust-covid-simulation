@@ -16,7 +16,7 @@ impl MainState {
     fn new(ctx: &mut Context) -> GameResult<MainState> {
         let (width, height) = graphics::drawable_size(ctx);
 
-        let people = person::create_people(10, width, height);
+        let people = person::create_people(100, width, height);
 
         let s = MainState {
             people: people,
@@ -31,7 +31,7 @@ impl MainState {
 impl event::EventHandler for MainState {
     fn update(&mut self, _ctx: &mut Context) -> GameResult {
         for p in &mut self.people {
-            person::update_person(p)
+            person::update_person(p, self.width, self.height)
         }
 
         Ok(())
