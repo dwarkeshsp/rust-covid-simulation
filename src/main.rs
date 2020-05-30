@@ -1,46 +1,61 @@
-use ggez::event::{self, EventHandler};
+//! The simplest possible example that does something.
+
+use ggez;
+use ggez::event;
 use ggez::graphics;
-use ggez::{Context, ContextBuilder, GameResult};
+use ggez::nalgebra as na;
+use ggez::{Context, GameResult};
 
-fn main() {
-    // Make a Context and an EventLoop.
-    let (mut ctx, mut event_loop) = ContextBuilder::new("game_name", "author_name")
-        .build()
-        .unwrap();
+enum Status {
+    Sick,
+    Healthy,
+}
 
-    // Create an instance of your event handler.
-    // Usually, you should provide it with the Context object
-    // so it can load resources like images during setup.
-    let mut my_game = MyGame::new(&mut ctx);
+struct Person {
+    pos_x: f32,
+    pos_y: f32,
+    status: Status,
+}
 
-    // Run!
-    match event::run(&mut ctx, &mut event_loop, &mut my_game) {
-        Ok(_) => println!("Exited cleanly."),
-        Err(e) => println!("Error occured: {}", e),
+impl Person {
+    fn new() -> GameResult<Person> {
+        let s = Person {
+            pos_x: 0.0,
+            pos_y: 0.0,
+            status: Status::Sick,
+        };
+        Ok(s)
     }
 }
 
-struct MyGame {
-    // Your state here...
-}
+impl event::EventHandler for Person {
+    fn update(&mut self, _ctx: &mut Context) -> GameResult {
+        self.pos_x = self.pos_x % 800.0 + 1.0;
+        self.pos_y = self.pos_y % 800.0 + 1.0;
+        Ok(())
+    }
 
-impl MyGame {
-    pub fn new(_ctx: &mut Context) -> MyGame {
-        // Load/create resources here: images, fonts, sounds, etc.
-        MyGame {}
+    fn draw(&mut self, ctx: &mut Context) -> GameResult {
+        graphics::clear(ctx, [0.1, 0.2, 0.3, 1.0].into());
+
+        let circle = graphics::Mesh::new_circle(
+            ctx,
+            graphics::DrawMode::fill(),
+            na::Point2::new(0.0, 0.0),
+            20.0,
+            2.0,
+            graphics::WHITE,
+        )?;
+        graphics::draw(ctx, &circle, (na::Point2::new(self.pos_x, self.pos_y),))?;
+
+        graphics::present(ctx)?;
+        Ok(())
     }
 }
 
-impl EventHandler for MyGame {
-    fn update(&mut self, _ctx: &mut Context) -> GameResult<()> {
-        // Update code here...
-    }
-
-    fn draw(&mut self, ctx: &mut Context) -> GameResult<()> {
-        graphics::clear(ctx, graphics::WHITE);
-
-        // Draw code here...
-
-        graphics::present(ctx)
-    }
+pub fn main() -> GameResult {
+    let cb = ggez::ContextBuilder::new("super_simple", "ggez");
+    let (ctx, event_loop) = &mut cb.build()?;
+    let state = &mut Person::new()?;
+    event::run(ctx, event_loop, state)
 }
