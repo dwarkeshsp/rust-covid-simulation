@@ -6,6 +6,7 @@ use ggez::graphics;
 use ggez::nalgebra as na;
 use ggez::{Context, GameResult};
 
+#[derive(PartialEq)]
 enum Status {
     Sick,
     Healthy,
@@ -18,7 +19,7 @@ struct Person {
 }
 
 impl Person {
-    fn new() -> GameResult<Person> {
+    fn new(status: Status) -> GameResult<Person> {
         let s = Person {
             pos_x: 0.0,
             pos_y: 0.0,
@@ -38,13 +39,18 @@ impl event::EventHandler for Person {
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
         graphics::clear(ctx, [0.1, 0.2, 0.3, 1.0].into());
 
+        let color = if Status::Sick == self.status {
+            graphics::BLACK
+        } else {
+            graphics::WHITE
+        };
         let circle = graphics::Mesh::new_circle(
             ctx,
             graphics::DrawMode::fill(),
             na::Point2::new(0.0, 0.0),
             20.0,
             2.0,
-            graphics::WHITE,
+            color,
         )?;
         graphics::draw(ctx, &circle, (na::Point2::new(self.pos_x, self.pos_y),))?;
 
@@ -56,6 +62,6 @@ impl event::EventHandler for Person {
 pub fn main() -> GameResult {
     let cb = ggez::ContextBuilder::new("super_simple", "ggez");
     let (ctx, event_loop) = &mut cb.build()?;
-    let state = &mut Person::new()?;
+    let state = &mut Person::new(Status::Sick)?;
     event::run(ctx, event_loop, state)
 }
