@@ -31,7 +31,7 @@ impl MainState {
 impl event::EventHandler for MainState {
     fn update(&mut self, _ctx: &mut Context) -> GameResult {
         for p in &mut self.people {
-            person::update_person(p, self.width, self.height)
+            person::move_person(p, self.width, self.height)
         }
 
         Ok(())

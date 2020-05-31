@@ -36,18 +36,18 @@ pub fn create_people(amount: i32, width: f32, heigth: f32) -> Vec<Person> {
     (0..amount).map(new_person).collect()
 }
 
-pub fn update_person(person: &mut Person, width: f32, heigth: f32) {
+pub fn move_person(person: &mut Person, width: f32, heigth: f32) {
     let mut rng = rand::thread_rng();
 
     let mut new_d = |old_d: f32, pos: f32, center: f32| {
-        let gravity = (center - pos).powi(2) / 10000.0;
+        let gravity = (center - pos).powi(2) / 100000.0;
         let mut result = if pos > center {
             old_d - gravity
         } else {
             old_d + gravity
         };
         result += rng.gen::<f32>() - 0.5;
-        result
+        result * 0.99
     };
     person.dx = new_d(person.dx, person.x, width / 2.0);
     person.dy = new_d(person.dy, person.y, heigth / 2.0);
