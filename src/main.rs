@@ -2,6 +2,7 @@ use ggez;
 use ggez::event;
 use ggez::graphics;
 use ggez::{Context, GameResult};
+use rand::Rng;
 
 mod person;
 
@@ -14,7 +15,7 @@ struct MainState {
 impl MainState {
     fn new(ctx: &mut Context) -> GameResult<MainState> {
         let (width, height) = graphics::drawable_size(ctx);
-        let people = person::create_people(100, width, height);
+        let people = person::create_people(width, height);
         let state = MainState {
             people: people,
             width: width,
@@ -22,6 +23,21 @@ impl MainState {
         };
 
         Ok(state)
+    }
+
+    fn handle_collisions(&mut self) {
+        let mut rng = rand::thread_rng();
+
+        for i in 0..self.people.len() {
+            for j in 0..self.people.len() {
+                if i != j && !person::is_sick(&self.people[i]) && person::is_sick(&self.people[j]) {
+                    const CONTRACTION_PROB: f32 = 0.0001;
+                    if CONTRACTION_PROB > rng.gen::<f32>() {
+                        person::make_sick(&mut self.people[i])
+                    }
+                };
+            }
+        }
     }
 }
 
@@ -31,6 +47,7 @@ impl event::EventHandler for MainState {
             person::move_person(p, self.width, self.height)
         }
 
+        self.handle_collisions();
         Ok(())
     }
 
