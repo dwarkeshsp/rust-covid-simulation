@@ -1,4 +1,5 @@
 use ggez;
+use ggez::conf;
 use ggez::event;
 use ggez::graphics;
 use ggez::{Context, GameResult};
@@ -25,13 +26,13 @@ impl MainState {
         Ok(state)
     }
 
-    fn handle_collisions(&mut self) {
+    fn handle_interactions(&mut self) {
         let mut rng = rand::thread_rng();
 
         for i in 0..self.people.len() {
             for j in 0..self.people.len() {
                 if i != j && !person::is_sick(&self.people[i]) && person::is_sick(&self.people[j]) {
-                    const CONTRACTION_PROB: f32 = 0.0001;
+                    const CONTRACTION_PROB: f32 = 0.00005;
                     if CONTRACTION_PROB > rng.gen::<f32>() {
                         person::make_sick(&mut self.people[i])
                     }
@@ -44,10 +45,10 @@ impl MainState {
 impl event::EventHandler for MainState {
     fn update(&mut self, _ctx: &mut Context) -> GameResult {
         for p in &mut self.people {
-            person::move_person(p, self.width, self.height)
+            person::update_person(p, self.width, self.height)
         }
 
-        self.handle_collisions();
+        self.handle_interactions();
         Ok(())
     }
 
@@ -64,7 +65,8 @@ impl event::EventHandler for MainState {
 }
 
 pub fn main() -> GameResult {
-    let cb = ggez::ContextBuilder::new("super_simple", "ggez");
+    let cb = ggez::ContextBuilder::new("contagion", "ggez")
+        .window_setup(conf::WindowSetup::default().title("Contagion Simulation"));
     let (ctx, event_loop) = &mut cb.build()?;
     let state = &mut MainState::new(ctx)?;
     event::run(ctx, event_loop, state)
