@@ -1,10 +1,8 @@
 use ggez;
-use ggez::event;
 use ggez::graphics;
 use ggez::nalgebra as na;
 use ggez::{Context, GameResult};
 use rand::Rng;
-use std::f32;
 
 #[derive(PartialEq)]
 enum Status {
@@ -22,7 +20,6 @@ pub struct Person {
 
 pub fn create_people(amount: i32, width: f32, heigth: f32) -> Vec<Person> {
     let mut rng = rand::thread_rng();
-
     let mut start_pos = |pos: f32| pos / 2.0 + 100.0 * rng.gen::<f32>();
 
     let new_person = |_| Person {
@@ -40,15 +37,18 @@ pub fn move_person(person: &mut Person, width: f32, heigth: f32) {
     let mut rng = rand::thread_rng();
 
     let mut new_d = |old_d: f32, pos: f32, center: f32| {
-        let gravity = (center - pos).powi(2) / 100000.0;
+        const SPREAD: f32 = 100000.0;
+        const DECELERATION: f32 = 0.99;
+        let gravity = (center - pos).powi(2) / SPREAD;
         let mut result = if pos > center {
             old_d - gravity
         } else {
             old_d + gravity
         };
         result += rng.gen::<f32>() - 0.5;
-        result * 0.99
+        result * DECELERATION
     };
+
     person.dx = new_d(person.dx, person.x, width / 2.0);
     person.dy = new_d(person.dy, person.y, heigth / 2.0);
     person.x += person.dx;
@@ -61,6 +61,7 @@ pub fn draw_person(ctx: &mut Context, person: &Person) -> GameResult {
     } else {
         graphics::WHITE
     };
+
     let circle = graphics::Mesh::new_circle(
         ctx,
         graphics::DrawMode::fill(),
@@ -69,6 +70,7 @@ pub fn draw_person(ctx: &mut Context, person: &Person) -> GameResult {
         2.0,
         color,
     )?;
+
     graphics::draw(ctx, &circle, (na::Point2::new(person.x, person.y),))?;
     Ok(())
 }

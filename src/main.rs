@@ -1,7 +1,6 @@
 use ggez;
 use ggez::event;
 use ggez::graphics;
-use ggez::nalgebra as na;
 use ggez::{Context, GameResult};
 
 mod person;
@@ -15,16 +14,14 @@ struct MainState {
 impl MainState {
     fn new(ctx: &mut Context) -> GameResult<MainState> {
         let (width, height) = graphics::drawable_size(ctx);
-
         let people = person::create_people(100, width, height);
-
-        let s = MainState {
+        let state = MainState {
             people: people,
             width: width,
             height: height,
         };
 
-        Ok(s)
+        Ok(state)
     }
 }
 
@@ -43,6 +40,7 @@ impl event::EventHandler for MainState {
         for p in &self.people {
             person::draw_person(ctx, p)?;
         }
+
         graphics::present(ctx)?;
         Ok(())
     }
