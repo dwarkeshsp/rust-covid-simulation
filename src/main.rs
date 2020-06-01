@@ -29,12 +29,19 @@ impl MainState {
     fn handle_interactions(&mut self) {
         let mut rng = rand::thread_rng();
 
-        for i in 0..self.people.len() {
-            for j in 0..self.people.len() {
-                if i != j && !person::is_sick(&self.people[i]) && person::is_sick(&self.people[j]) {
-                    const CONTRACTION_PROB: f32 = 0.00005;
+        for a in 0..self.people.len() {
+            for b in 0..self.people.len() {
+                let p_a = &self.people[a];
+                let p_b = &self.people[b];
+
+                if a != b
+                    && !person::is_sick(p_a)
+                    && person::is_sick(p_b)
+                    && person::are_interacting(p_a, p_b)
+                {
+                    const CONTRACTION_PROB: f32 = 0.05;
                     if CONTRACTION_PROB > rng.gen::<f32>() {
-                        person::make_sick(&mut self.people[i])
+                        person::make_sick(&mut self.people[a])
                     }
                 };
             }

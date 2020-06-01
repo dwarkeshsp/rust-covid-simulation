@@ -17,14 +17,7 @@ pub struct Person {
     dx: f32,
     dy: f32,
     status: Status,
-}
-
-pub fn is_sick(person: &Person) -> bool {
-    person.status == Status::Sick
-}
-
-pub fn make_sick(person: &mut Person) {
-    person.status = Status::Sick;
+    days_sick: f32,
 }
 
 pub fn create_people(width: f32, heigth: f32) -> Vec<Person> {
@@ -38,6 +31,7 @@ pub fn create_people(width: f32, heigth: f32) -> Vec<Person> {
         dx: 0.0,
         dy: 0.0,
         status: status,
+        days_sick: 0.0,
     };
 
     const HEALTHY: u32 = 250;
@@ -73,10 +67,12 @@ pub fn update_person(person: &mut Person, width: f32, heigth: f32) {
     person.dy = new_d(person.dy, person.y, heigth / 2.0);
     person.x += person.dx;
     person.y += person.dy;
-
     if person.status == Status::Sick {
-        const RECOVERY_PROB: f32 = 0.005;
-        if RECOVERY_PROB > rng.gen::<f32>() {
+        // every frame is a quarter of a day
+        person.days_sick += 0.25;
+    }
+    if person.status == Status::Sick {
+        if person.days_sick > 14.0 {
             person.status = Status::Recovered
         }
     }
@@ -103,4 +99,18 @@ pub fn draw_person(ctx: &mut Context, person: &Person) -> GameResult {
 
     graphics::draw(ctx, &circle, (na::Point2::new(person.x, person.y),))?;
     Ok(())
+}
+
+pub fn is_sick(person: &Person) -> bool {
+    person.status == Status::Sick
+}
+
+pub fn make_sick(person: &mut Person) {
+    person.status = Status::Sick;
+}
+
+pub fn are_interacting(person_a: &Person, person_b: &Person) -> bool {
+    let x_overlap = (person_a.x - person_b.x).abs() < 5.0;
+    let y_overlap = (person_a.y - person_b.y).abs() < 5.0;
+    x_overlap && y_overlap
 }
