@@ -34,6 +34,7 @@ pub fn create_people(width: f32, heigth: f32) -> Vec<Person> {
         days_sick: 0.0,
     };
 
+    // start with 250 healthy and 5 sick
     const HEALTHY: u32 = 250;
     const SICK: u32 = 5;
 
@@ -56,9 +57,10 @@ pub fn update_person(person: &mut Person, width: f32, heigth: f32) {
         } else {
             old_d + gravity
         };
+        // gotta keep it weird and random
         result += rng.gen::<f32>() - 0.5;
 
-        // prevents insane speeds
+        // prevents insane speed buildups
         const DECELERATION: f32 = 0.99;
         result * DECELERATION
     };
@@ -109,7 +111,7 @@ pub fn make_sick(person: &mut Person) {
     person.status = Status::Sick;
 }
 
-pub fn are_interacting(person_a: &Person, person_b: &Person) -> bool {
+pub fn are_colliding(person_a: &Person, person_b: &Person) -> bool {
     let x_overlap = (person_a.x - person_b.x).abs() < 5.0;
     let y_overlap = (person_a.y - person_b.y).abs() < 5.0;
     x_overlap && y_overlap

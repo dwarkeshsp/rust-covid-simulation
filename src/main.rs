@@ -9,6 +9,7 @@ mod person;
 
 struct MainState {
     people: Vec<person::Person>,
+    // screen dimensions
     width: f32,
     height: f32,
 }
@@ -29,6 +30,7 @@ impl MainState {
     fn handle_interactions(&mut self) {
         let mut rng = rand::thread_rng();
 
+        // if a healthy person collides with a sick person, he might get sick
         for a in 0..self.people.len() {
             for b in 0..self.people.len() {
                 let p_a = &self.people[a];
@@ -37,7 +39,7 @@ impl MainState {
                 if a != b
                     && !person::is_sick(p_a)
                     && person::is_sick(p_b)
-                    && person::are_interacting(p_a, p_b)
+                    && person::are_colliding(p_a, p_b)
                 {
                     const CONTRACTION_PROB: f32 = 0.05;
                     if CONTRACTION_PROB > rng.gen::<f32>() {
