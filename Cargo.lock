@@ -1700,6 +1700,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "rust-covid-simulation"
+version = "0.1.0"
+dependencies = [
+ "ggez",
+ "rand 0.7.3",
+]
+
+[[package]]
 name = "rustc-demangle"
 version = "0.1.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1981,14 +1989,6 @@ name = "stdweb-internal-runtime"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "213701ba3370744dcd1a12960caa4843b3d68b4d1c0a5d575e0d65b2ee9d16c0"
-
-[[package]]
-name = "structs"
-version = "0.1.0"
-dependencies = [
- "ggez",
- "rand 0.7.3",
-]
 
 [[package]]
 name = "syn"

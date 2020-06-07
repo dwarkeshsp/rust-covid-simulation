@@ -52,17 +52,17 @@ pub fn update_person(person: &mut Person, width: f32, heigth: f32) {
         const SPREAD: f32 = 100000.0;
         let gravity = (center - pos).powi(2) / SPREAD;
 
-        let mut result = if pos > center {
+        let mut d = if pos > center {
             old_d - gravity
         } else {
             old_d + gravity
         };
         // gotta keep it weird and random
-        result += rng.gen::<f32>() - 0.5;
+        d += 1.5 * (rng.gen::<f32>() - 0.5);
 
         // prevents insane speed buildups
         const DECELERATION: f32 = 0.99;
-        result * DECELERATION
+        d * DECELERATION
     };
 
     person.dx = new_d(person.dx, person.x, width / 2.0);

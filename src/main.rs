@@ -41,7 +41,7 @@ impl MainState {
                     && person::is_sick(p_b)
                     && person::are_colliding(p_a, p_b)
                 {
-                    const CONTRACTION_PROB: f32 = 0.05;
+                    const CONTRACTION_PROB: f32 = 0.1;
                     if CONTRACTION_PROB > rng.gen::<f32>() {
                         person::make_sick(&mut self.people[a])
                     }

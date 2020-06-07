@@ -1,5 +1,5 @@
 [package]
-name = "structs"
+name = "rust-covid-simulation"
 version = "0.1.0"
 authors = ["Dwarkesh Patel <dwarkesh.sanjay.patel@gmail.com>"]
 edition = "2018"
