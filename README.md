@@ -9,7 +9,7 @@ I wrote this program to learn Rust. Here's what I learned:
 To run, [install rust](https://www.rust-lang.org/tools/install) and then run the following commands:
 
 ```bash
-git clone https://github.com/dwarkeshsp/rust-covid-simulation`
+git clone https://github.com/dwarkeshsp/rust-covid-simulation
 cd rust-covid-simulation
 cargo run
 ```
