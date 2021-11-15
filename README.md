@@ -4,8 +4,6 @@ This program shows how the phenomenon of exponential growth and herd immunity em
 
 I wrote this program to learn Rust. Here's what I learned:
 
-## The Rust compiler is a fucking asshole :)
-
 To run, [install rust](https://www.rust-lang.org/tools/install) and then run the following commands:
 
 ```bash
